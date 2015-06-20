@@ -1,8 +1,14 @@
 # GrapeDeviseTokenAuth
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/grape_devise_token_auth`. To experiment with that code, run `bin/console` for an interactive prompt.
+GrapeDeviseTokenAuth gem is a compatability layer between
+[devise_token_auth][1] and [grape][2]. It is useful when mounting a grape API
+in a rails application where [devise][3] (or `devise_token_auth` + `devise`)
+is already present. It is reliant on `devise_token_auth` and `devise`,
+therefore it is not suitable for grape where these are not present.
 
-TODO: Delete this and the text above, and describe your gem
+The majority of the hard work and credit goes to [Lyann Dylan
+Hurley][4] and his fantistic [devise_token_auth][1] gem.
+I merely have ported this to work well with grape.
 
 ## Installation
 
@@ -22,7 +28,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Place this line in an initializer in your rails app or at least somewhere before
+the grape API will get loaded:
+
+```ruby
+GrapeDeviseTokenAuth.setup!(true)
+```
+
+Within the Grape API:
+
+```
+class Posts < Grape::API
+  auth :grape_devise_token_auth, resource_class: :user
+
+  helpers GrapeDeviseTokenAuth::AuthHelpers
+
+  # ...
+end
+```
+
+including the helpers line allows you to use methods the `current_user` and
+`authenticated?` within the API.
+
+The resource class option allows you to specific the scope that will be
+authenticated, this corresponds to your devise mapping.
+
+All calls will now be authenticated in the above API via rack middleware.
+
+## Testing and Example
+
+Currently I am using [this repo][5] to test this gem, eventually I plan on
+migrating the tests into the `grape_devise_token_auth` repo. For now though, I
+refer you to that repo for how to integrate with an existing `devise` and
+`devise_token_auth` repo.
 
 ## Development
 
@@ -37,3 +75,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+[1]: https://github.com/lynndylanhurley/devise_token_auth
+[2]: https://github.com/intridea/grape
+[3]: https://github.com/plataformatec/devise
+[4]: https://github.com/lynndylanhurley
+[5]: https://github.com/mcordell/rails_grape_auth
+
