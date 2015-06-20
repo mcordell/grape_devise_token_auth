@@ -1,9 +1,8 @@
-require 'grape_devise_token_auth/version'
-require 'grape_devise_token_auth/middleware'
-require 'grape_devise_token_auth/auth_helpers'
-require 'grape_devise_token_auth/authorizer_data'
-require 'grape_devise_token_auth/token_authorizer'
-require 'grape_devise_token_auth/configuration'
+%w(version middleware auth_helpers authorizer_data
+   token_authorizer configuration auth_headers).each  do |file|
+     require "grape_devise_token_auth/#{file}"
+   end
+
 require 'grape'
 
 module GrapeDeviseTokenAuth
