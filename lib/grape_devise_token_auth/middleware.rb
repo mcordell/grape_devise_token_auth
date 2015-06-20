@@ -1,18 +1,15 @@
 module GrapeDeviseTokenAuth
   class Middleware
-    ACCESS_TOKEN_KEY = 'HTTP_ACCESS_TOKEN'
-    EXPIRY_KEY = 'HTTP_EXPIRY'
-    UID_KEY = 'HTTP_UID'
-    CLIENT_KEY = 'HTTP_CLIENT'
+    extend Forwardable
 
     def initialize(app, resource_name)
       @app = app
-      resource_class_from_mapping(resource_name)
+      @resource_name = resource_name
     end
 
     def call(env)
       setup(env)
-      user = authenticate_from_token
+      user = token_authorizer.authenticate_from_token(@resource_name)
       return unauthorized unless user
       sign_in_user(user)
       responses_with_auth_headers(*@app.call(env))
@@ -20,15 +17,13 @@ module GrapeDeviseTokenAuth
 
     private
 
-    attr_reader :uid, :client_id, :token, :expiry, :user, :resource_class, :resource, :warden, :batch_request_buffer_throttle, :request_start
+    def_delegators :@authorizer_data, :warden, :token, :client_id
+    attr_reader :authorizer_data, :token_authorizer, :resource, :request_start
 
     def setup(env)
-      @request_start = Time.now
-      @uid           = env[UID_KEY]
-      @client_id     = env[CLIENT_KEY] || 'default'
-      @token         = env[ACCESS_TOKEN_KEY]
-      @expiry        = env[EXPIRY_KEY]
-      @warden        = env['warden']
+      @request_start    = Time.now
+      @authorizer_data  = AuthorizerData.from_env(env)
+      @token_authorizer = TokenAuthorizer.new(@authorizer_data)
     end
 
     def sign_in_user(user)
@@ -42,54 +37,6 @@ module GrapeDeviseTokenAuth
     def set_user_in_warden(scope, resource)
       scope    = Devise::Mapping.find_scope!(scope)
       warden.session_serializer.store(resource, scope)
-    end
-
-    def resource_from_existing_devise_user
-      warden_user =  warden.user(resource_class.to_s.underscore.to_sym)
-      return unless warden_user && warden_user.tokens[client_id].nil?
-      @resource = warden_user
-      @resource.create_new_auth_token
-    end
-
-    def authenticate_from_token(mapping = nil)
-      resource_class_from_mapping(mapping)
-      return nil unless resource_class
-
-      resource_from_existing_devise_user
-      return resource if correct_resource_type_logged_in?
-
-      return nil unless token_request_valid?
-
-      user = resource_class.find_by_uid(uid)
-
-      return nil unless user && user.valid_token?(token, client_id)
-
-      user
-    end
-
-    def token_request_valid?
-      token && uid
-    end
-
-    def correct_resource_type_logged_in?
-      resource && resource.class == resource_class
-    end
-
-    def resource_class_from_mapping(m)
-      mapping = m ? Devise.mappings[m] : Devise.mappings.values.first
-      @resource_class = mapping.to
-    end
-
-    def valid?
-      keys_present? && !expired?
-    end
-
-    def keys_present?
-      uid.present? && client_id.present? && token.present?
-    end
-
-    def expired?
-      env[EXPIRY_KEY].to_i < Time.now.to_i
     end
 
     def responses_with_auth_headers(status, headers, response)
