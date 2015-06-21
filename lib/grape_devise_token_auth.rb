@@ -6,15 +6,30 @@
 require 'grape'
 
 module GrapeDeviseTokenAuth
-  def self.setup!(middleware = false)
-    add_auth_strategy if middleware
-  end
+  class << self
+    extend Forwardable
 
-  def self.add_auth_strategy
-    Grape::Middleware::Auth::Strategies.add(
-      :grape_devise_token_auth,
-      GrapeDeviseTokenAuth::Middleware,
-      ->(options) { [options[:resource_class]] }
-    )
+    def_delegators :configuration, :batch_request_buffer_throttle, :change_headers_on_each_request
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def config
+      yield(configuration)
+    end
+
+    def setup!(middleware = false)
+      yield(configuration) if block_given?
+      add_auth_strategy if configuration.authenticate_all
+    end
+
+    def add_auth_strategy
+      Grape::Middleware::Auth::Strategies.add(
+        :grape_devise_token_auth,
+        GrapeDeviseTokenAuth::Middleware,
+        ->(options) { [options[:resource_class]] }
+      )
+    end
   end
 end

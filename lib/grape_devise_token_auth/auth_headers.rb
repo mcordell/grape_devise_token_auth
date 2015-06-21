@@ -26,14 +26,15 @@ module GrapeDeviseTokenAuth
 
     def within_batch_request_window?
       end_of_window = Time.parse(resource.tokens[client_id]['updated_at']) +
-                      DeviseTokenAuth.batch_request_buffer_throttle
+                      GrapeDeviseTokenAuth.batch_request_buffer_throttle
+
       request_start < end_of_window
     end
 
     def auth_headers_from_resource
       auth_headers = {}
       resource.with_lock do
-        if !DeviseTokenAuth.change_headers_on_each_request
+        if !GrapeDeviseTokenAuth.change_headers_on_each_request
           auth_headers = resource.extend_batch_buffer(token, client_id)
         elsif batch_request?
           resource.extend_batch_buffer(token, client_id)
