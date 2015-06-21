@@ -2,12 +2,13 @@ module GrapeDeviseTokenAuth
   class TokenAuthorizer
     extend Forwardable
 
-    def initialize(data)
+    def initialize(data, devise_interface)
       @data = data
+      @devise_interface = devise_interface
     end
 
     def authenticate_from_token(mapping = nil)
-      resource_class_from_mapping(mapping)
+      @resource_class =  devise_interface.mapping_to_class(mapping)
       return nil unless resource_class
 
       resource_from_existing_devise_user
@@ -22,7 +23,8 @@ module GrapeDeviseTokenAuth
 
     private
 
-    attr_reader :data, :resource_class, :resource, :user
+    attr_accessor :resource_class
+    attr_reader :data, :resource, :user, :devise_interface
     def_delegators :@data, :warden, :uid, :token, :client_id
 
     def user_authenticated?
@@ -33,21 +35,12 @@ module GrapeDeviseTokenAuth
       @user = resource_class.find_by_uid(uid)
     end
 
-
     def resource_from_existing_devise_user
-      warden_user =  warden.user(resource_class.to_s.underscore.to_sym)
-      return unless warden_user && warden_user.tokens[client_id].nil?
-      @resource = warden_user
-      @resource.create_new_auth_token
+      @resource = @devise_interface.exisiting_warden_user(resource_class)
     end
 
     def correct_resource_type_logged_in?
       resource && resource.class == resource_class
-    end
-
-    def resource_class_from_mapping(m)
-      mapping = m ? Devise.mappings[m] : Devise.mappings.values.first
-      @resource_class = mapping.to
     end
   end
 end

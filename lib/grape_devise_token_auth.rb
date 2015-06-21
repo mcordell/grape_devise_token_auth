@@ -1,5 +1,5 @@
 %w(version middleware auth_helpers authorizer_data
-   token_authorizer configuration auth_headers).each  do |file|
+   token_authorizer configuration auth_headers devise_interface).each  do |file|
      require "grape_devise_token_auth/#{file}"
    end
 
