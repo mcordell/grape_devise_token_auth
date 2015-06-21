@@ -32,7 +32,7 @@ Place this line in an initializer in your rails app or at least somewhere before
 the grape API will get loaded:
 
 ```ruby
-GrapeDeviseTokenAuth.setup!(true)
+GrapeDeviseTokenAuth.setup!
 ```
 
 Within the Grape API:
@@ -47,13 +47,30 @@ class Posts < Grape::API
 end
 ```
 
-including the helpers line allows you to use methods the `current_user` and
-`authenticated?` within the API.
-
 The resource class option allows you to specific the scope that will be
 authenticated, this corresponds to your devise mapping.
 
-All calls will now be authenticated in the above API via rack middleware.
+Individual endpoints can now be authenticated by calling `authenticate_YOUR_MAPPING_HERE!` (e.g. `authenticate_user!`)
+within them.
+
+For Example:
+
+```
+get '/' do
+  authenticate_user!
+  present Post.all
+end
+```
+
+alternatively to portect all routes place the call in a before block:
+
+```
+before do
+  authenticate_user!
+end
+```
+
+[A full example setup can be found here][6]
 
 ## Testing and Example
 
@@ -81,4 +98,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 [3]: https://github.com/plataformatec/devise
 [4]: https://github.com/lynndylanhurley
 [5]: https://github.com/mcordell/rails_grape_auth
-
+[6]: https://github.com/mcordell/rails_grape_auth/blob/7ca6b2f3d989fc23824aaf40fc353fc3e8de40ec/app/api/grape_api/posts.rb
