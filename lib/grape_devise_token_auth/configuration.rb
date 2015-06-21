@@ -9,7 +9,11 @@ module GrapeDeviseTokenAuth
     def initialize
       @batch_request_buffer_throttle  ||= DeviseTokenAuth.batch_request_buffer_throttle
       @change_headers_on_each_request ||= DeviseTokenAuth.change_headers_on_each_request
-      @authenticate_all = true
+      @authenticate_all = false
+    end
+
+    def auth_all?
+      @authenticate_all
     end
   end
 end

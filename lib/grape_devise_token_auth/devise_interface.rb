@@ -1,8 +1,8 @@
 module GrapeDeviseTokenAuth
   class DeviseInterface
-    def initialize(warden, client_id)
-      @warden = warden
-      @client_id = client_id
+    def initialize(data)
+      @warden = data.warden
+      @client_id = data.client_id
     end
 
     # extracted and simplified from Devise

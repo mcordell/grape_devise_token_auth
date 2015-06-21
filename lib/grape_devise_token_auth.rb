@@ -1,4 +1,4 @@
-%w(version middleware auth_helpers authorizer_data
+%w(version middleware auth_helpers authorizer_data unauthorized
    token_authorizer configuration auth_headers devise_interface).each  do |file|
      require "grape_devise_token_auth/#{file}"
    end
@@ -21,7 +21,7 @@ module GrapeDeviseTokenAuth
 
     def setup!(middleware = false)
       yield(configuration) if block_given?
-      add_auth_strategy if configuration.authenticate_all
+      add_auth_strategy
     end
 
     def add_auth_strategy
