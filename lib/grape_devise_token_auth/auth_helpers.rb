@@ -6,14 +6,19 @@ module GrapeDeviseTokenAuth
           warden.session_serializer.fetch(mapping)
         end
 
-        define_method("authenticate_#{mapping}!") do
+        define_method("authenticate_#{mapping}") do
           authorizer_data  = AuthorizerData.from_env(env)
           devise_interface = DeviseInterface.new(authorizer_data)
           token_authorizer = TokenAuthorizer.new(authorizer_data,
                                                  devise_interface)
           user = token_authorizer.authenticate_from_token(mapping)
+          devise_interface.set_user_in_warden(mapping, user) if user
+          user
+        end
+
+        define_method("authenticate_#{mapping}!") do
+          user = send("authenticate_#{mapping}")
           fail Unauthorized unless user
-          devise_interface.set_user_in_warden(mapping, user)
           user
         end
       end
