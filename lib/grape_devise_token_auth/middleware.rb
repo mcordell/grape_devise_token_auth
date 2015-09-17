@@ -23,8 +23,8 @@ module GrapeDeviseTokenAuth
     def_delegators :@authorizer_data, :warden, :token, :client_id
 
     def auth_all
-      return if skip_auth_all?
       @resource = token_authorizer.authenticate_from_token(@resource_name)
+      return if skip_auth_all?
       fail Unauthorized unless user
     end
 

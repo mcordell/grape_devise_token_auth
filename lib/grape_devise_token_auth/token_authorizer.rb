@@ -8,13 +8,11 @@ module GrapeDeviseTokenAuth
     end
 
     def authenticate_from_token(mapping = nil)
-      @resource_class =  devise_interface.mapping_to_class(mapping)
+      @resource_class = devise_interface.mapping_to_class(mapping)
       return nil unless resource_class
-
       return nil unless data.token_prerequisites_present?
       load_user_from_uid
       return nil unless user_authenticated?
-
       user
     end
 
