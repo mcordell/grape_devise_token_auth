@@ -62,13 +62,15 @@ get '/' do
 end
 ```
 
-alternatively to portect all routes place the call in a before block:
+alternatively to protect all routes place the call in a before block:
 
 ```
 before do
   authenticate_user!
 end
 ```
+
+There is also a `authenticate_user` version of this helper (notice that it lacks of exclamation mark) that doen't fail nor returns 401.
 
 [A full example setup can be found here][6]
 
