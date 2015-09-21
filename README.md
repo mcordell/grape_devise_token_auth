@@ -1,14 +1,15 @@
 # GrapeDeviseTokenAuth
 
-GrapeDeviseTokenAuth gem is a compatability layer between
-[devise_token_auth][1] and [grape][2]. It is useful when mounting a grape API
-in a rails application where [devise][3] (or `devise_token_auth` + `devise`)
-is already present. It is reliant on `devise_token_auth` and `devise`,
-therefore it is not suitable for grape where these are not present.
+GrapeDeviseTokenAuth gem is a compatibility layer between [devise_token_auth][1]
+and [grape][2]. It is useful when mounting a grape API in a rails application
+where [devise][3] (or `devise_token_auth` + `devise`) is already present. It is
+reliant on `devise_token_auth` and `devise`, therefore it is not suitable for
+grape where these are not present. If you are looking for a pure grape solution,
+you should check out [grape\_token\_auth][gta].
 
-The majority of the hard work and credit goes to [Lyann Dylan
-Hurley][4] and his fantistic [devise_token_auth][1] gem.
-I merely have ported this to work well with grape.
+The majority of the hard work and credit goes to [Lyann Dylan Hurley][4] and his
+fantastic [devise_token_auth][1] gem.  I merely have ported this to work well
+with grape.
 
 ## Installation
 
@@ -101,3 +102,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 [4]: https://github.com/lynndylanhurley
 [5]: https://github.com/mcordell/rails_grape_auth
 [6]: https://github.com/mcordell/rails_grape_auth/blob/7ca6b2f3d989fc23824aaf40fc353fc3e8de40ec/app/api/grape_api/posts.rb
+[gta]: https://github.com/mcordell/grape_token_auth
