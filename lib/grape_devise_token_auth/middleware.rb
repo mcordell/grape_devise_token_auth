@@ -23,10 +23,9 @@ module GrapeDeviseTokenAuth
     def_delegators :@authorizer_data, :warden, :token, :client_id
 
     def auth_all
+      @resource = token_authorizer.authenticate_from_token(@resource_name)
       return if skip_auth_all?
-      user = token_authorizer.authenticate_from_token(@resource_name)
       fail Unauthorized unless user
-      sign_in_user(user)
     end
 
     def skip_auth_all?
@@ -41,12 +40,8 @@ module GrapeDeviseTokenAuth
                                               @devise_interface)
     end
 
-    def sign_in_user(user)
-      @devise_interface.set_user_in_warden(@resource_name, user)
-    end
-
     def responses_with_auth_headers(status, headers, response)
-      auth_headers = AuthHeaders.new(warden, @resource_name, request_start, authorizer_data)
+      auth_headers = AuthHeaders.new(@resource, request_start, authorizer_data)
       [
         status,
         headers.merge(auth_headers.headers),

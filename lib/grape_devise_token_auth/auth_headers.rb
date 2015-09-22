@@ -2,8 +2,8 @@ module GrapeDeviseTokenAuth
   class AuthHeaders
     extend Forwardable
 
-    def initialize(warden, mapping, request_start, data)
-      @resource = warden.session_serializer.fetch(mapping)
+    def initialize(resource, request_start, data)
+      @resource = resource
       @request_start = request_start
       @data = data
     end
