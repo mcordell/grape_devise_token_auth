@@ -11,8 +11,12 @@ module GrapeDeviseTokenAuth
       @resource_class =  devise_interface.mapping_to_class(mapping)
       return nil unless resource_class
 
+      # client id is not required
+      client_id = data.client_id || 'default'
+
       resource_from_existing_devise_user
-      return resource if correct_resource_type_logged_in?
+      return resource if correct_resource_type_logged_in? &&
+                         resource_does_not_have_client_token?(client_id)
 
       return nil unless data.token_prerequisites_present?
       load_user_from_uid
@@ -41,6 +45,10 @@ module GrapeDeviseTokenAuth
 
     def correct_resource_type_logged_in?
       resource && resource.class == resource_class
+    end
+
+    def resource_does_not_have_client_token?(client_id)
+      resource.tokens[client_id].nil?
     end
   end
 end
