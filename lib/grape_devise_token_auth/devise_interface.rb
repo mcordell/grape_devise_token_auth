@@ -8,7 +8,7 @@ module GrapeDeviseTokenAuth
     # extracted and simplified from Devise
     def set_user_in_warden(scope, resource)
       scope = Devise::Mapping.find_scope!(scope)
-      warden.session_serializer.store(resource, scope)
+      warden.set_user(resource, scope: scope, store: false)
     end
 
     def mapping_to_class(m)

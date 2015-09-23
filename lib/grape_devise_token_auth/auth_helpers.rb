@@ -3,7 +3,7 @@ module GrapeDeviseTokenAuth
     def self.included(_base)
       Devise.mappings.keys.each do |mapping|
         define_method("current_#{mapping}") do
-          warden.session_serializer.fetch(mapping)
+          warden.user(mapping)
         end
 
         define_method("authenticate_#{mapping}") do
