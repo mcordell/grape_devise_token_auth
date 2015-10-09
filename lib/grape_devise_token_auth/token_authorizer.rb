@@ -14,9 +14,11 @@ module GrapeDeviseTokenAuth
       # client id is not required
       client_id = data.client_id || 'default'
 
-      resource_from_existing_devise_user
-      return resource if correct_resource_type_logged_in? &&
-                         resource_does_not_have_client_token?(client_id)
+      unless GrapeDeviseTokenAuth.configuration.ignore_existing_warden_users
+        resource_from_existing_devise_user
+        return resource if correct_resource_type_logged_in? &&
+                           resource_does_not_have_client_token?(client_id)
+      end
 
       return nil unless data.token_prerequisites_present?
       load_user_from_uid
