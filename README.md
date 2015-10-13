@@ -75,6 +75,20 @@ There is also a `authenticate_user` version of this helper (notice that it lacks
 
 [A full example setup can be found here][6]
 
+**Note about ignoring existing warden users**
+
+If you are having issues with users persisting across logins or you do not want
+to integrate with devise, you can disable the integration with devise during
+setup as so:
+
+```ruby
+
+GrapeDeviseTokenAuth.setup! do |config|
+  config.ignore_existing_warden_users = true
+end
+```
+
+
 ## Testing and Example
 
 Currently I am using [this repo][5] to test this gem, eventually I plan on
