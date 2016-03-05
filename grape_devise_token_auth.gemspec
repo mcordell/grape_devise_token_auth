@@ -20,5 +20,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_dependency 'grape', '> 0.9.0'
   spec.add_dependency 'devise', '~> 3.3'
-  spec.add_dependency 'devise_token_auth', '~> 0.1.32.beta9'
+  spec.add_dependency 'devise_token_auth', '~> 0.1.37'
 end
