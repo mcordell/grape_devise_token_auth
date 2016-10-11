@@ -1,4 +1,4 @@
 module GrapeDeviseTokenAuth
-  class Unauthorized < Exception
+  class Unauthorized < StandardError
   end
 end
