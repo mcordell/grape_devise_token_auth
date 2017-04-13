@@ -49,7 +49,7 @@ module GrapeDeviseTokenAuth
       auth_headers = AuthHeaders.new(warden, @resource_name, request_start, authorizer_data)
       [
         status,
-        headers.merge(auth_headers.headers),
+        headers.merge!(auth_headers.headers),
         response
       ]
     end
