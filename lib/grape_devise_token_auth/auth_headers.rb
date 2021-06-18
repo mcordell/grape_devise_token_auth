@@ -3,7 +3,7 @@ module GrapeDeviseTokenAuth
     extend Forwardable
 
     def initialize(warden, mapping, request_start, data)
-      @resource = warden.user(:user)
+      @resource = warden.user(mapping || :user)
       @request_start = request_start
       @data = data
     end
