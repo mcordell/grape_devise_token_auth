@@ -4,7 +4,7 @@ module GrapeDeviseTokenAuth
 
     def initialize(app, resource_name)
       @app = app
-      @resource_name = resource_name
+      @resource_name = resource_name || app.options[:resource_class]
     end
 
     def call(env)
